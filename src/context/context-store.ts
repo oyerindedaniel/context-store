@@ -66,6 +66,12 @@ function shallowEqual<T>(a: T, b: T): boolean {
   return true;
 }
 
+function logError(...args: unknown[]) {
+  if (process.env.NODE_ENV === "development") {
+    console.error("[ContextStore Error]", ...args);
+  }
+}
+
 /**
  * Hook: Creates a stable store reference for any value that can be passed to React Context.
  * The store reference never changes - only the internal state updates.
@@ -101,7 +107,7 @@ export function useContextStore<T>(value: T): StoreApi<T> {
           listener();
         }
       } catch (error) {
-        console.error("Error in listener", error);
+        logError("Error in listener", error);
       }
     });
   });

@@ -15,17 +15,25 @@ function CounterControls() {
     })
   );
 
-  console.log("count in demo", count);
   return (
     <div className="flex items-center gap-2">
-      <button className="rounded border px-2 py-1 text-sm" onClick={decrement}>
+      <button
+        className="rounded border px-2 py-1 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
+        onClick={decrement}
+      >
         -
       </button>
       <span className="min-w-[3ch] text-center">{count}</span>
-      <button className="rounded border px-2 py-1 text-sm" onClick={increment}>
+      <button
+        className="rounded border px-2 py-1 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
+        onClick={increment}
+      >
         +
       </button>
-      <button className="rounded border px-2 py-1 text-sm" onClick={reset}>
+      <button
+        className="rounded border px-2 py-1 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
+        onClick={reset}
+      >
         Reset
       </button>
     </div>
@@ -68,7 +76,7 @@ function ItemsList() {
           onChange={(e) => setLocal(e.target.value)}
         />
         <button
-          className="rounded border px-2 py-1 text-sm"
+          className="rounded border px-2 py-1 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
           onClick={() => {
             if (local) {
               addItem(local);
@@ -79,7 +87,7 @@ function ItemsList() {
           Add
         </button>
         <button
-          className="rounded border px-2 py-1 text-sm"
+          className="rounded border px-2 py-1 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
           onClick={clearItems}
         >
           Clear

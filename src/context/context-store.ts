@@ -82,7 +82,6 @@ export function useContextStore<T>(value: T): StoreApi<T> {
 
   if (hasChanged) {
     stateRef.current = value;
-    console.log("has chnges", value);
     pendingValueRef.current = value;
   }
 

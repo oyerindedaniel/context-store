@@ -7,7 +7,7 @@ import Demo from "@/components/app/demo";
 
 export default function Home() {
   return (
-    <div className="font-sans min-h-screen p-8 sm:p-20">
+    <div className="font-mono min-h-screen p-8 sm:p-20">
       <div className="mx-auto max-w-3xl">
         <Demo />
       </div>

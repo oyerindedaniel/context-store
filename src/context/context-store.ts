@@ -80,20 +80,20 @@ function logError(...args: unknown[]) {
  * Only notifies listeners whose selected slice actually changed.
  */
 export function useContextStore<T>(value: T): StoreApi<T> {
-  const stateRef = useRef(value);
-  const listenersRef = useRef(new Map<() => void, ListenerData<T>>());
+  const stateRef = useRef<T>(value);
+  const listenersRef = useRef<Map<() => void, ListenerData<T>>>(new Map());
   const storeRef = useRef<StoreApi<T> | null>(null);
   const pendingValueRef = useRef<T | null>(null);
 
   const prevValue = stateRef.current;
   const hasChanged = !Object.is(prevValue, value);
 
-  if (hasChanged) {
-    stateRef.current = value;
-    pendingValueRef.current = value;
-  }
-
   useIsomorphicLayoutEffect(() => {
+    if (hasChanged) {
+      stateRef.current = value;
+      pendingValueRef.current = value;
+    }
+
     if (pendingValueRef.current === null) return;
 
     const newValue = pendingValueRef.current;
@@ -139,7 +139,7 @@ export function useShallowSelector<T, S>(
   context: Context<StoreApi<T> | null>,
   selector: Selector<T, S>
 ): S {
-  const store = useContext(context);
+  const store = useContext<StoreApi<T> | null>(context);
 
   if (!store) {
     throw new Error(
@@ -147,8 +147,11 @@ export function useShallowSelector<T, S>(
     );
   }
 
-  const selectorRef = useRef(selector);
-  selectorRef.current = selector;
+  const selectorRef = useRef<Selector<T, S>>(selector);
+
+  useIsomorphicLayoutEffect(() => {
+    selectorRef.current = selector;
+  }, [selector]);
 
   const lastSelectedRef = useRef<{ hasValue: boolean; value?: S }>({
     hasValue: false,

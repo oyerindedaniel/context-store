@@ -115,7 +115,7 @@ function logError(...args: unknown[]) {
     storeRef.current = {
       getSnapshot: () => stateRef.current,
       subscribe: (listener: () => void, selector: Selector<T, any>) => {
-        let currentValue: any;
+        let currentValue;
 
         try {
           currentValue = selector(stateRef.current);
@@ -180,8 +180,7 @@ function logError(...args: unknown[]) {
 
   const subscribe = useCallback(
     (listener: () => void) => {
-      let cleanup = store.subscribe(listener, selector);
-      return () => cleanup();
+      return () => store.subscribe(listener, selector);
     },
     [store, selector]
   );

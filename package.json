@@ -1,6 +1,6 @@
 {
   "name": "react-shallow-store",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Lightweight React context store with shallow selector and minimal re-renders.",
   "author": "Oyerinde Daniel",
   "license": "MIT",

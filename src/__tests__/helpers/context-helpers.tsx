@@ -1,7 +1,5 @@
 import * as React from "react";
 import { createContext } from "react";
-import { cleanup } from "@testing-library/react";
-import { vi, afterEach } from "vitest";
 import { useContextStore, StoreApi } from "../../context-store";
 
 export interface ProviderProps<T> {
@@ -39,11 +37,6 @@ export function createTestContext<T>() {
       );
     };
   }
-
-  afterEach(() => {
-    cleanup();
-    vi.restoreAllMocks();
-  });
 
   return { Ctx, makeProvider };
 }

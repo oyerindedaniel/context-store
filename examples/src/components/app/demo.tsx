@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { AppContext, AppProvider } from "@/context/app-context";
-import { useShallowSelector } from "@/context/context-store";
+import { useShallowSelector } from "react-shallow-store";
 
 function CounterControls() {
   const { count, increment, decrement, reset } = useShallowSelector(

@@ -1,0 +1,43 @@
+# Dependencies
+node_modules
+.pnpm
+.pnpm-debug.log*
+
+# Build tools & configs
+tsconfig.json
+tsconfig.*.json
+tsup.config.ts
+vitest.config.*
+jest.config.*
+babel.config.*
+rollup.config.*
+webpack.config.*
+*.config.js
+*.config.cjs
+*.config.mjs
+
+# Tests & coverage
+test
+tests
+__tests__
+*.test.ts
+*.spec.ts
+coverage
+
+# Example/demo apps
+examples*/
+example*/
+demo*/
+
+# IDE & misc
+.vscode
+.idea
+.DS_Store
+*.log
+
+# Local publish artifacts
+*.tgz
+
+# Git
+.git
+.gitignore

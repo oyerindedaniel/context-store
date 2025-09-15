@@ -1,7 +1,7 @@
 import * as React from "react";
-import { render, screen, waitFor, cleanup } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, test, expect, vi, afterEach } from "vitest";
+import { describe, test, expect } from "vitest";
 import { useShallowSelector, StoreApi } from "../context-store";
 import { createTestContext } from "./helpers/context-helpers";
 
@@ -108,11 +108,6 @@ function DirectSubscriber() {
 
   return <div data-testid="direct-calls">{String(calls)}</div>;
 }
-
-afterEach(() => {
-  cleanup();
-  vi.restoreAllMocks();
-});
 
 describe("integration: useContextStore + useShallowSelector (detailed)", () => {
   test("multiple consumers update independently and shallow equality prevents unnecessary rerenders", async () => {

@@ -1,5 +1,5 @@
 {
-  "name": "use-context-store",
+  "name": "react-shallow-store",
   "version": "0.1.0",
   "description": "Lightweight React context store with shallow selector and minimal re-renders.",
   "author": "Oyerinde Daniel",
@@ -7,18 +7,20 @@
   "private": false,
   "type": "module",
   "main": "dist/index.cjs",
-  "module": "dist/index.mjs",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
+      "import": "./dist/index.js",
       "require": "./dist/index.cjs",
-      "default": "./dist/index.mjs"
+      "default": "./dist/index.js"
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "keywords": [
     "react",
@@ -34,12 +36,12 @@
     "test": "vitest",
     "test:watch": "vitest --watch",
     "test:coverage": "vitest run --coverage",
-    "clean": "rimraf dist",
-    "prepublishOnly": "pnpm run build"
+    "clean": "rm -rf dist",
+    "prepublishOnly": "pnpm run build",
+    "type-check": "tsc --noEmit"
   },
   "peerDependencies": {
-    "react": ">=18 || >=19",
-    "react-dom": ">=18 || >=19"
+    "react": ">=18.0.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.8.0",

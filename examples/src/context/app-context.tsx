@@ -6,7 +6,7 @@ import React, {
   useState,
   type ReactNode,
 } from "react";
-import { StoreApi, useContextStore } from "use-context-store";
+import { StoreApi, useContextStore } from "react-shallow-store";
 
 type AppState = {
   count: number;

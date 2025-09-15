@@ -1,11 +1,11 @@
-## use-context-store
+## react-shallow-store
 
-Lightweight, fully-typed React context store with shallow selector support. Efficient re-rendering and ergonomic API for React 18/19.
+Lightweight, fully-typed React context store with shallow selector support. Efficient re-rendering and ergonomic API.
 
 ### Install
 
 ```bash
-pnpm add use-context-store
+pnpm add react-shallow-store
 ```
 
 ### API
@@ -21,7 +21,7 @@ import {
   useContextStore,
   useShallowSelector,
   type StoreApi,
-} from "use-context-store";
+} from "react-shallow-store";
 
 type AppState = { count: number; text: string };
 const AppContext = createContext<StoreApi<AppState> | null>(null);
@@ -37,6 +37,8 @@ function Counter() {
 }
 ```
 
+For more real-world examples, see the [examples README](./examples/README.md).
+
 ### License
 
-MIT
+This project is licensed under the [MIT License](./LICENSE).

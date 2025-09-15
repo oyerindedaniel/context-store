@@ -1,8 +1,42 @@
-# React Context Store with Shallow Selector
+## @oyeri/context-store
 
-A lightweight, fully-typed React store utility with context integration and shallow selector support. Designed for efficient, client-friendly state management with minimal re-renders.
+Lightweight, fully-typed React context store with shallow selector support. Efficient re-rendering and ergonomic API for React 18/19.
 
-## Features
+### Install
 
-- `useContextStore`: Creates a stable store reference for any value. Only notifies listeners whose selected slice changes.
-- `useShallowSelector`: Selects a slice from a context store with shallow equality, minimizing unnecessary re-renders.
+```bash
+pnpm add @oyeri/context-store
+```
+
+### API
+
+- `useContextStore<T>(value: T): StoreApi<T>`
+- `useShallowSelector<T, S>(context: React.Context<StoreApi<T>|null>, selector: (state: T) => S): S`
+
+### Basic usage
+
+```tsx
+import { createContext } from "react";
+import {
+  useContextStore,
+  useShallowSelector,
+  type StoreApi,
+} from "@oyeri/context-store";
+
+type AppState = { count: number; text: string };
+const AppContext = createContext<StoreApi<AppState> | null>(null);
+
+function Provider({ children }: { children: React.ReactNode }) {
+  const store = useContextStore({ count: 0, text: "" });
+  return <AppContext.Provider value={store}>{children}</AppContext.Provider>;
+}
+
+function Counter() {
+  const count = useShallowSelector(AppContext, (s) => s.count);
+  return <span>{count}</span>;
+}
+```
+
+### License
+
+MIT

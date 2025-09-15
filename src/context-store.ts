@@ -33,7 +33,6 @@ export interface StoreApi<T> {
 interface ListenerData<T> {
   selector: Selector<T, any>;
   lastValue: any;
-  hasValue: boolean;
 }
 
 /**
@@ -79,37 +78,35 @@ function logError(...args: unknown[]) {
  * The store reference never changes - only the internal state updates.
  * Only notifies listeners whose selected slice actually changed.
  */
-export function useContextStore<T>(value: T): StoreApi<T> {
+/* @__NO_SIDE_EFFECTS__ */ export function useContextStore<T>(
+  value: T
+): StoreApi<T> {
   const stateRef = useRef<T>(value);
   const listenersRef = useRef<Map<() => void, ListenerData<T>>>(new Map());
   const storeRef = useRef<StoreApi<T> | null>(null);
-  const pendingValueRef = useRef<T | null>(null);
 
   const prevValue = stateRef.current;
   const hasChanged = !Object.is(prevValue, value);
 
   useIsomorphicLayoutEffect(() => {
-    if (hasChanged) {
-      stateRef.current = value;
-      pendingValueRef.current = value;
-    }
+    if (!hasChanged) return;
 
-    if (pendingValueRef.current === null) return;
-
-    const newValue = pendingValueRef.current;
-    pendingValueRef.current = null;
+    stateRef.current = value;
 
     listenersRef.current.forEach((data, listener) => {
       try {
-        const newSelected = data.selector(newValue);
+        const newSelected = data.selector(value);
 
-        if (!data.hasValue || !shallowEqual(data.lastValue, newSelected)) {
+        if (!shallowEqual(data.lastValue, newSelected)) {
           data.lastValue = newSelected;
-          data.hasValue = true;
-          listener();
+          try {
+            listener();
+          } catch (listenerError) {
+            throw listenerError;
+          }
         }
       } catch (error) {
-        logError("Error in listener", error);
+        logError("Error in selector", error);
       }
     });
   });
@@ -118,10 +115,18 @@ export function useContextStore<T>(value: T): StoreApi<T> {
     storeRef.current = {
       getSnapshot: () => stateRef.current,
       subscribe: (listener: () => void, selector: Selector<T, any>) => {
+        let currentValue: any;
+
+        try {
+          currentValue = selector(stateRef.current);
+        } catch (error) {
+          logError("Error in initial selector call during subscription", error);
+          currentValue = undefined;
+        }
+
         listenersRef.current.set(listener, {
           selector,
-          lastValue: undefined,
-          hasValue: false,
+          lastValue: currentValue,
         });
         return () => listenersRef.current.delete(listener);
       },
@@ -135,7 +140,7 @@ export function useContextStore<T>(value: T): StoreApi<T> {
  * Hook: select a slice from context store with shallow equality.
  * Only re-renders when the selected slice actually changes.
  */
-export function useShallowSelector<T, S>(
+/* @__NO_SIDE_EFFECTS__ */ export function useShallowSelector<T, S>(
   context: Context<StoreApi<T> | null>,
   selector: Selector<T, S>
 ): S {
@@ -147,36 +152,38 @@ export function useShallowSelector<T, S>(
     );
   }
 
-  const selectorRef = useRef<Selector<T, S>>(selector);
-
-  useIsomorphicLayoutEffect(() => {
-    selectorRef.current = selector;
-  }, [selector]);
-
   const lastSelectedRef = useRef<{ hasValue: boolean; value?: S }>({
     hasValue: false,
   });
 
   const createSnapshot = useCallback(() => {
-    const state = store.getSnapshot();
-    const selected = selectorRef.current(state);
+    try {
+      const state = store.getSnapshot();
+      const selected = selector(state);
 
-    if (lastSelectedRef.current.hasValue) {
-      const prev = lastSelectedRef.current.value as S;
-      if (shallowEqual(prev, selected)) {
-        return prev;
+      if (lastSelectedRef.current.hasValue) {
+        const prev = lastSelectedRef.current.value as S;
+        if (shallowEqual(prev, selected)) {
+          return prev;
+        }
       }
-    }
 
-    lastSelectedRef.current = { hasValue: true, value: selected };
-    return selected;
-  }, [store]);
+      lastSelectedRef.current = { hasValue: true, value: selected };
+      return selected;
+    } catch (error) {
+      logError("Error in createSnapshot", error);
+      return lastSelectedRef.current.hasValue
+        ? (lastSelectedRef.current.value as S)
+        : (undefined as S);
+    }
+  }, [store, selector]);
 
   const subscribe = useCallback(
     (listener: () => void) => {
-      return store.subscribe(listener, selectorRef.current);
+      let cleanup = store.subscribe(listener, selector);
+      return () => cleanup();
     },
-    [store]
+    [store, selector]
   );
 
   return useSyncExternalStore(subscribe, createSnapshot, createSnapshot);

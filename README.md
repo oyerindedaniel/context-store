@@ -1,11 +1,13 @@
-## react-shallow-store
+# react-shallow-store
+
+[![npm version](https://img.shields.io/npm/v/react-shallow-store)](https://www.npmjs.com/package/react-shallow-store)
 
 Lightweight, fully-typed React context store with shallow selector support. Efficient re-rendering and ergonomic API.
 
 ### Install
 
 ```bash
-pnpm add react-shallow-store
+npm add react-shallow-store
 ```
 
 ### API

@@ -7,7 +7,7 @@ Lightweight, fully-typed React context store with shallow selector support. Effi
 ### Install
 
 ```bash
-npm add react-shallow-store
+npm install react-shallow-store
 ```
 
 ### API

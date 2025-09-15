@@ -180,7 +180,8 @@ function logError(...args: unknown[]) {
 
   const subscribe = useCallback(
     (listener: () => void) => {
-      return () => store.subscribe(listener, selector);
+      const cleanup = store.subscribe(listener, selector);
+      return () => cleanup();
     },
     [store, selector]
   );

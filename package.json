@@ -1,6 +1,6 @@
 {
   "name": "react-shallow-store",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Lightweight React context store with shallow selector and minimal re-renders.",
   "author": "Oyerinde Daniel",
   "license": "MIT",
@@ -38,6 +38,7 @@
     "test:coverage": "vitest run --coverage",
     "clean": "rm -rf dist",
     "prepublishOnly": "pnpm run build",
+    "prepare-package": "pnpm run clean && pnpm run build && npm run pack",
     "type-check": "tsc --noEmit"
   },
   "peerDependencies": {

@@ -1,11 +1,11 @@
-## @oyeri/context-store
+## use-context-store
 
 Lightweight, fully-typed React context store with shallow selector support. Efficient re-rendering and ergonomic API for React 18/19.
 
 ### Install
 
 ```bash
-pnpm add @oyeri/context-store
+pnpm add use-context-store
 ```
 
 ### API
@@ -21,7 +21,7 @@ import {
   useContextStore,
   useShallowSelector,
   type StoreApi,
-} from "@oyeri/context-store";
+} from "use-context-store";
 
 type AppState = { count: number; text: string };
 const AppContext = createContext<StoreApi<AppState> | null>(null);

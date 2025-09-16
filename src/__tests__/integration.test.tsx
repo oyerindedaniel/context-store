@@ -73,7 +73,11 @@ function SelectorSwapper() {
   const selectorA = (s: AppState) => s.a;
   const selectorB = (s: AppState) => s.b;
 
-  const selected = useShallowSelector(AppContext, useA ? selectorA : selectorB);
+  const selected = useShallowSelector(
+    AppContext,
+    useA ? selectorA : selectorB,
+    [useA]
+  );
 
   return (
     <div>

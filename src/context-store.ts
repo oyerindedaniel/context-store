@@ -78,24 +78,30 @@ function logError(...args: unknown[]) {
  * The store reference never changes - only the internal state updates.
  * Only notifies listeners whose selected slice actually changed.
  */
-/* @__NO_SIDE_EFFECTS__ */ export function useContextStore<T>(
-  value: T
-): StoreApi<T> {
-  const stateRef = useRef<T>(value);
-  const listenersRef = useRef<Map<() => void, ListenerData<T>>>(new Map());
+/* @__NO_SIDE_EFFECTS__ */
+export function useContextStore<T>(value: T): StoreApi<T> {
+  const stateRef = useRef(value);
+  const listenersRef = useRef(new Map<() => void, ListenerData<T>>());
   const storeRef = useRef<StoreApi<T> | null>(null);
+  const pendingValueRef = useRef<T | null>(null);
 
   const prevValue = stateRef.current;
   const hasChanged = !Object.is(prevValue, value);
 
-  useIsomorphicLayoutEffect(() => {
-    if (!hasChanged) return;
-
+  if (hasChanged) {
     stateRef.current = value;
+    pendingValueRef.current = value;
+  }
+
+  useIsomorphicLayoutEffect(() => {
+    if (pendingValueRef.current === null) return;
+
+    const newValue = pendingValueRef.current;
+    pendingValueRef.current = null;
 
     listenersRef.current.forEach((data, listener) => {
       try {
-        const newSelected = data.selector(value);
+        const newSelected = data.selector(newValue);
 
         if (!shallowEqual(data.lastValue, newSelected)) {
           data.lastValue = newSelected;
@@ -138,11 +144,25 @@ function logError(...args: unknown[]) {
 
 /**
  * Hook: select a slice from context store with shallow equality.
- * Only re-renders when the selected slice actually changes.
+ *
+ * - Uses `useSyncExternalStore` for React 18+ compatibility.
+ * - Only re-renders when the selected slice actually changes (via shallow compare).
+ * - The `selector` function is kept in a ref to avoid unnecessary re-subscriptions.
+ *
+ * @template T Store state type
+ * @template S Selected slice type
+ *
+ * @param context - The React context that provides a `StoreApi<T>`.
+ * @param selector - Function that selects a slice of state from the store.
+ * @param deps - Optional dependency array.
+ *   - By default, the subscription is created once and never re-created.
+ *   - If provided, the subscription will re-mount whenever the dependencies change.
  */
-/* @__NO_SIDE_EFFECTS__ */ export function useShallowSelector<T, S>(
+/* @__NO_SIDE_EFFECTS__ */
+export function useShallowSelector<T, S>(
   context: Context<StoreApi<T> | null>,
-  selector: Selector<T, S>
+  selector: Selector<T, S>,
+  deps?: React.DependencyList
 ): S {
   const store = useContext<StoreApi<T> | null>(context);
 
@@ -152,14 +172,23 @@ function logError(...args: unknown[]) {
     );
   }
 
+  const selectorRef = useRef(selector);
+  const isLocked = deps === undefined;
+
+  useIsomorphicLayoutEffect(() => {
+    if (!isLocked) {
+      selectorRef.current = selector;
+    }
+  }, deps ?? []);
+
   const lastSelectedRef = useRef<{ hasValue: boolean; value?: S }>({
     hasValue: false,
   });
 
-  const createSnapshot = useCallback(() => {
+  const createSnapshot = () => {
     try {
       const state = store.getSnapshot();
-      const selected = selector(state);
+      const selected = selectorRef.current(state);
 
       if (lastSelectedRef.current.hasValue) {
         const prev = lastSelectedRef.current.value as S;
@@ -176,15 +205,12 @@ function logError(...args: unknown[]) {
         ? (lastSelectedRef.current.value as S)
         : (undefined as S);
     }
-  }, [store, selector]);
+  };
 
-  const subscribe = useCallback(
-    (listener: () => void) => {
-      const cleanup = store.subscribe(listener, selector);
-      return () => cleanup();
-    },
-    [store, selector]
-  );
+  const subscribe = useCallback((listener: () => void) => {
+    const cleanup = store.subscribe(listener, selectorRef.current);
+    return () => cleanup();
+  }, deps ?? []);
 
   return useSyncExternalStore(subscribe, createSnapshot, createSnapshot);
 }

@@ -1,21 +1,59 @@
 # react-shallow-store
 
-[![npm version](https://img.shields.io/npm/v/react-shallow-store)](https://www.npmjs.com/package/react-shallow-store)
+[![npm version](https://img.shields.io/npm/v/react-shallow-store?color=blue)](https://www.npmjs.com/package/react-shallow-store)
 
 Lightweight, fully-typed React context store with shallow selector support. Efficient re-rendering and ergonomic API.
 
-### Install
+## Install
 
 ```bash
+# npm
 npm install react-shallow-store
+
+# pnpm
+pnpm add react-shallow-store
+
+# yarn
+yarn add react-shallow-store
+
+# bun
+bun add react-shallow-store
 ```
 
-### API
+## API
 
-- `useContextStore<T>(value: T): StoreApi<T>`
-- `useShallowSelector<T, S>(context: React.Context<StoreApi<T>|null>, selector: (state: T) => S): S`
+### `useContextStore<T>(value: T): StoreApi<T>`
 
-### Basic usage
+Creates a context-bound store from any value.
+
+#### Parameters
+
+- `value: T` — The initial state object (any serializable shape).
+
+#### Returns
+
+- `StoreApi<T>` — A store API object with `getSnapshot` and `subscribe` methods.
+
+---
+
+### `useShallowSelector<T, S>(context: React.Context<StoreApi<T>|null>, selector: (state: T) => S, deps?: React.DependencyList): S`
+
+Selects a slice of state with shallow comparison.  
+Re-renders only when the slice actually changes.
+
+#### Parameters
+
+- `context: React.Context<StoreApi<T>|null>` — A React context containing the store created by `useContextStore`.
+- `selector: (state: T) => S` — A function that selects a slice of state from the store.
+- `deps?: React.DependencyList` — Optional dependency array.
+  - If provided, the selector is updated when dependencies change.
+  - If omitted, the selector remains locked to its initial function.
+
+#### Returns
+
+- `S` — The selected slice of state.
+
+## Basic usage
 
 ```tsx
 import { createContext } from "react";
@@ -41,6 +79,6 @@ function Counter() {
 
 For more real-world examples, see the [examples README](./examples/README.md).
 
-### License
+## License
 
 This project is licensed under the [MIT License](./LICENSE).

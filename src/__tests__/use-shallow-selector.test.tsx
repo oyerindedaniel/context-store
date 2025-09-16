@@ -244,4 +244,89 @@ describe("useShallowSelector (integration)", () => {
       expect(Number(text)).not.toBeNaN();
     });
   });
+  test("changing selector without deps does not resubscribe (stale subscription)", async () => {
+    function Parent() {
+      const [useA, setUseA] = React.useState(true);
+      const toggle = () => setUseA((v) => !v);
+
+      return (
+        <>
+          <button data-testid="toggle-stale" onClick={toggle}>
+            toggle
+          </button>
+          <Child useA={useA} />
+        </>
+      );
+    }
+
+    function Child({ useA }) {
+      const selectorA = (s: TestState) => s.a;
+      const selectorB = (s: TestState) => s.b;
+
+      const selector = useA ? selectorA : selectorB;
+      const val = useShallowSelector(TestContext, selector);
+
+      return <div data-testid="staleVal">{String(val)}</div>;
+    }
+
+    render(
+      <TestProvider initial={{ a: 1, b: 5 }}>
+        <Parent />
+      </TestProvider>
+    );
+
+    const user = userEvent.setup();
+
+    await user.click(screen.getByTestId("toggle-stale"));
+    await user.click(screen.getByTestId("incB"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("staleVal").textContent).toBe("1");
+    });
+  });
+  test("changing selector with deps resubscribes correctly", async () => {
+    function Parent() {
+      const [useA, setUseA] = React.useState(true);
+      const toggle = () => setUseA((v) => !v);
+
+      const selectorA = (s: TestState) => s.a;
+      const selectorB = (s: TestState) => s.b;
+
+      return (
+        <>
+          <button data-testid="toggle-dep" onClick={toggle}>
+            toggle
+          </button>
+          <Child useA={useA} />
+        </>
+      );
+    }
+
+    function Child({ useA }) {
+      const selectorA = (s: TestState) => s.a;
+      const selectorB = (s: TestState) => s.b;
+
+      const selector = useA ? selectorA : selectorB;
+      const val = useShallowSelector(TestContext, selector, [useA]);
+
+      return <div data-testid="depVal">{String(val)}</div>;
+    }
+
+    render(
+      <TestProvider initial={{ a: 2, b: 7 }}>
+        <Parent />
+      </TestProvider>
+    );
+
+    const user = userEvent.setup();
+
+    await user.click(screen.getByTestId("toggle-dep"));
+    await user.click(screen.getByTestId("incB"));
+
+    await waitFor(() => {
+      expect(
+        Number(screen.getByTestId("depVal").textContent)
+      ).toBeGreaterThanOrEqual(8);
+    });
+  });
 });

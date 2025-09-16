@@ -20,6 +20,14 @@ yarn add react-shallow-store
 bun add react-shallow-store
 ```
 
+## Features
+
+- Tiny API surface → just two hooks to learn
+- Shallow selector support → prevents unnecessary re-renders
+- Fully typed → end-to-end TypeScript support
+- Context based → no external dependencies
+- React 18+ ready → works seamlessly with concurrent rendering
+
 ## API
 
 ### `useContextStore<T>(value: T): StoreApi<T>`

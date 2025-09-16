@@ -136,78 +136,57 @@ export function CartActions() {
 }
 ```
 
-## 2) Feature flags + permissions (role-based UI)
+## 2) Theme with selector dependencies
 
-Role/flags context that gates features. Components subscribe to a narrow slice so unrelated flag changes don’t re-render everything.
+This example shows how to use `useShallowSelector` with a dependency array.  
+The `ThemeLabel` selector depends on the `prefix` prop, so it’s passed in `deps`.  
+Without `deps`, the selector would stay locked to its initial closure.
 
 ```tsx
-// app/flags-provider.tsx
+// app/theme-provider.tsx
 "use client";
-import { createContext, type ReactNode, useCallback, useState } from "react";
+import { createContext, type ReactNode, useState } from "react";
 import { useContextStore, type StoreApi } from "react-shallow-store";
 
-type Role = "guest" | "user" | "admin";
-type Flags = { dashboard: boolean; betaCheckout: boolean; auditLogs: boolean };
-type FlagsState = {
-  role: Role;
-  flags: Flags;
-  setRole: (r: Role) => void;
-  setFlag: (k: keyof Flags, v: boolean) => void;
+type Theme = "light" | "dark";
+type ThemeState = {
+  theme: Theme;
+  toggle: () => void;
 };
 
-export const FlagsContext = createContext<StoreApi<FlagsState> | null>(null);
+export const ThemeContext = createContext<StoreApi<ThemeState> | null>(null);
 
-export function FlagsProvider({ children }: { children: ReactNode }) {
-  const [role, setRoleState] = useState<Role>("guest");
-  const [flags, setFlags] = useState<Flags>({
-    dashboard: true,
-    betaCheckout: false,
-    auditLogs: false,
-  });
-
-  const setRole = useCallback((r: Role) => setRoleState(r), []);
-  const setFlag = useCallback(
-    (k: keyof Flags, v: boolean) => setFlags((f) => ({ ...f, [k]: v })),
-    []
-  );
-
-  const store = useContextStore({ role, flags, setRole, setFlag });
+export function ThemeProvider({ children }: { children: ReactNode }) {
+  const [theme, setTheme] = useState<Theme>("light");
+  const toggle = () => setTheme((t) => (t === "light" ? "dark" : "light"));
+  const store = useContextStore({ theme, toggle });
   return (
-    <FlagsContext.Provider value={store}>{children}</FlagsContext.Provider>
+    <ThemeContext.Provider value={store}>{children}</ThemeContext.Provider>
   );
 }
 
-// app/secure-widgets.tsx
+// app/theme-label.tsx
 ("use client");
 import { useShallowSelector } from "react-shallow-store";
-import { FlagsContext } from "./flags-provider";
+import { ThemeContext } from "./theme-provider";
 
-export function AdminAuditLogs() {
-  const canView = useShallowSelector(
-    FlagsContext,
-    (s) => s.role === "admin" && s.flags.auditLogs
+export function ThemeLabel({ prefix }: { prefix: string }) {
+  // selector depends on `prefix`, so we pass it in deps
+  const label = useShallowSelector(
+    ThemeContext,
+    (s) => `${prefix}: ${s.theme}`,
+    [prefix]
   );
-  if (!canView) return null;
-  return <section>Audit Logs Widget</section>;
+  return <span>{label}</span>;
 }
 
-export function BetaCheckoutButton() {
-  const enabled = useShallowSelector(FlagsContext, (s) => s.flags.betaCheckout);
-  return <button disabled={!enabled}>Try Beta Checkout</button>;
-}
+// app/theme-toggle.tsx
+("use client");
+import { useShallowSelector } from "react-shallow-store";
+import { ThemeContext } from "./theme-provider";
 
-export function SwitchRole() {
-  const { role, setRole } = useShallowSelector(FlagsContext, (s) => ({
-    role: s.role,
-    setRole: s.setRole,
-  }));
-  return (
-    <div>
-      <span>Role: {role}</span>
-      <button onClick={() => setRole("guest")}>Guest</button>
-      <button onClick={() => setRole("user")}>User</button>
-      <button onClick={() => setRole("admin")}>Admin</button>
-    </div>
-  );
+export function ThemeToggle() {
+  const toggle = useShallowSelector(ThemeContext, (s) => s.toggle);
+  return <button onClick={toggle}>Toggle Theme</button>;
 }
 ```

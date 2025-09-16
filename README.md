@@ -1,6 +1,6 @@
 # react-shallow-store
 
-[![npm version](https://img.shields.io/npm/v/react-shallow-store?color=blue)](https://www.npmjs.com/package/react-shallow-store)
+[![npm version](https://img.shields.io/npm/v/react-shallow-store)](https://www.npmjs.com/package/react-shallow-store)
 
 Lightweight, fully-typed React context store with shallow selector support. Efficient re-rendering and ergonomic API.
 

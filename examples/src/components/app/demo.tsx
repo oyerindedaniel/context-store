@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { AppContext, AppProvider } from "@/context/app-context";
+import { AppContext } from "@/context/app-context";
 import { useShallowSelector } from "react-shallow-store";
 
 function CounterControls() {
@@ -102,7 +102,7 @@ function ItemsList() {
   );
 }
 
-function Panel() {
+export default function Demo() {
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-black/10 dark:border-white/20 p-3">
       <h3 className="text-sm font-semibold">App Context Demo</h3>
@@ -110,13 +110,5 @@ function Panel() {
       <TextInput />
       <ItemsList />
     </div>
-  );
-}
-
-export default function Demo() {
-  return (
-    <AppProvider>
-      <Panel />
-    </AppProvider>
   );
 }

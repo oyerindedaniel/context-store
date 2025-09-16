@@ -78,8 +78,9 @@ function logError(...args: unknown[]) {
  * The store reference never changes - only the internal state updates.
  * Only notifies listeners whose selected slice actually changed.
  */
-/* @__NO_SIDE_EFFECTS__ */
-export function useContextStore<T>(value: T): StoreApi<T> {
+/* @__NO_SIDE_EFFECTS__ */ export function useContextStore<T>(
+  value: T
+): StoreApi<T> {
   const stateRef = useRef(value);
   const listenersRef = useRef(new Map<() => void, ListenerData<T>>());
   const storeRef = useRef<StoreApi<T> | null>(null);
@@ -89,6 +90,8 @@ export function useContextStore<T>(value: T): StoreApi<T> {
   const hasChanged = !Object.is(prevValue, value);
 
   if (hasChanged) {
+    // Deliberate: update refs even if render is later discarded.
+    // Safe: effects won't run on aborted renders, so listeners are never triggered prematurely.
     stateRef.current = value;
     pendingValueRef.current = value;
   }
@@ -158,8 +161,7 @@ export function useContextStore<T>(value: T): StoreApi<T> {
  *   - By default, the subscription is created once and never re-created.
  *   - If provided, the subscription will re-mount whenever the dependencies change.
  */
-/* @__NO_SIDE_EFFECTS__ */
-export function useShallowSelector<T, S>(
+/* @__NO_SIDE_EFFECTS__ */ export function useShallowSelector<T, S>(
   context: Context<StoreApi<T> | null>,
   selector: Selector<T, S>,
   deps?: React.DependencyList

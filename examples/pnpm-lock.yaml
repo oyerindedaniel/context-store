@@ -18,8 +18,8 @@ importers:
         specifier: 19.1.0
         version: 19.1.0(react@19.1.0)
       react-shallow-store:
-        specifier: ^0.1.2
-        version: 0.1.2(react@19.1.0)
+        specifier: file:..\react-shallow-store-0.1.2.tgz
+        version: file:../react-shallow-store-0.1.2.tgz(react@19.1.0)
     devDependencies:
       '@eslint/eslintrc':
         specifier: ^3
@@ -1533,8 +1533,9 @@ packages:
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
-  react-shallow-store@0.1.2:
-    resolution: {integrity: sha512-EAV4hGdpYH5w4GX/wCqlwFUW0PJvaO3GIAFBTW63hSnYW65uLQ+eBn5VET4kfZatFAP/irl0ydN5sKC72T9Z1g==}
+  react-shallow-store@file:../react-shallow-store-0.1.2.tgz:
+    resolution: {integrity: sha512-CqSZL4D+S2odOHYK/EBeQavqHKI8dOaPMScsZhAgCiYp0gVS+C0PJZVDWeyENynxwkEROMi5YgPEWkuSpUayZA==, tarball: file:../react-shallow-store-0.1.2.tgz}
+    version: 0.1.2
     peerDependencies:
       react: '>=18.0.0'
 
@@ -3384,7 +3385,7 @@ snapshots:
 
   react-is@16.13.1: {}
 
-  react-shallow-store@0.1.2(react@19.1.0):
+  react-shallow-store@file:../react-shallow-store-0.1.2.tgz(react@19.1.0):
     dependencies:
       react: 19.1.0
 

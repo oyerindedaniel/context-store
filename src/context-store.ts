@@ -148,7 +148,7 @@ function logError(...args: unknown[]) {
 /**
  * Hook: select a slice from context store with shallow equality.
  *
- * - Uses `useSyncExternalStore` for React 18+ compatibility.
+ * - Uses `useSyncExternalStore`.
  * - Only re-renders when the selected slice actually changes (via shallow compare).
  * - The `selector` function is kept in a ref to avoid unnecessary re-subscriptions.
  *

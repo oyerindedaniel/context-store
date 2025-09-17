@@ -94,21 +94,17 @@ function DirectSubscriber() {
   const store = React.useContext(AppContext);
   const [calls, setCalls] = React.useState(0);
 
-  React.useEffect(
-    function () {
-      if (!store) return;
-      function listener() {
-        setCalls(function (c) {
-          return c + 1;
-        });
-      }
-      function select(s: AppState) {
-        return s.b;
-      }
-      return store.subscribe(listener, select);
-    },
-    [store]
-  );
+  React.useEffect(() => {
+    if (!store) return;
+
+    const listener = () => {
+      setCalls((c) => c + 1);
+    };
+
+    const select = (s: AppState) => s.b;
+
+    return store.subscribe(listener, select);
+  }, [store]);
 
   return <div data-testid="direct-calls">{String(calls)}</div>;
 }

@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {
-  Context,
+  type Context,
+  type DependencyList,
   useContext,
   useRef,
   useSyncExternalStore,
@@ -164,7 +165,7 @@ function logError(...args: unknown[]) {
 /* @__NO_SIDE_EFFECTS__ */ export function useShallowSelector<T, S>(
   context: Context<StoreApi<T> | null>,
   selector: Selector<T, S>,
-  deps?: React.DependencyList
+  deps?: DependencyList
 ): S {
   const store = useContext<StoreApi<T> | null>(context);
 
